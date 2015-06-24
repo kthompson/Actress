@@ -318,7 +318,7 @@ namespace Actress.Tests
         [InlineData(1)]
         [InlineData(100)]
         [InlineData(1000)]
-        [InlineData(100000)]
+        [InlineData(10000)]
         public void PostReceive(int n)
         {
             // Given
@@ -326,7 +326,7 @@ namespace Actress.Tests
 
             var mb = MailboxProcessor.Start<IOption<int>>(async inbox =>
             {
-                for (var i = 0; i < n - 1; i++)
+                for (var i = 0; i < n; i++)
                 {
                     var _ = await inbox.Receive();
                     Interlocked.Increment(ref received);
@@ -335,7 +335,7 @@ namespace Actress.Tests
 
 
             // When
-            for (var i = 0; i < n - 1; i++)
+            for (var i = 0; i < n; i++)
             {
                 mb.Post(Option.Some(i));
             }
@@ -386,7 +386,7 @@ namespace Actress.Tests
 
 
             // When
-            for (var i = 0; i < n - 1; i++)
+            for (var i = 0; i < n; i++)
             {
                 Thread.Sleep(1);
                 mb.Post(Option.Some(i));
