@@ -2,6 +2,9 @@
 
 Actress is a C# port of the F# MailboxProcessor.
 
+	nuget install Actress   # Install C# Actor system
+
+
 # Example
 
 
