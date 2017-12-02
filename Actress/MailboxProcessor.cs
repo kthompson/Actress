@@ -1,9 +1,9 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace Actress
 {
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+
     public class MailboxProcessor
     {
         public static MailboxProcessor<T> Start<T>(Func<MailboxProcessor<T>, Task> body, CancellationToken? cancellationToken = null) 
@@ -23,28 +23,21 @@ namespace Actress
         private bool _started;
         private readonly Observable<Exception> _errorEvent;
 
-
-        public IObservable<Exception> Errors
-        {
-            get { return _errorEvent; }
-        }
-
-        public int CurrentQueueLength
-        {
-            get { return this._mailbox.CurrentQueueLength; }
-        }
-
-        public int DefaultTimeout { get; set; }
-
         public MailboxProcessor(Func<MailboxProcessor<TMsg>, Task> body, CancellationToken? cancellationToken = null)
         {
-            _body = body;
+            this._body = body;
             this._cancellationToken = cancellationToken ?? Task.Factory.CancellationToken;
             this._mailbox = new Mailbox<TMsg>();
             this.DefaultTimeout = Timeout.Infinite;
             this._started = false;
-            _errorEvent = new Observable<Exception>();
+            this._errorEvent = new Observable<Exception>();
         }
+
+        public IObservable<Exception> Errors => this._errorEvent;
+
+        public int CurrentQueueLength => this._mailbox.CurrentQueueLength;
+
+        public int DefaultTimeout { get; set; }
 
         public void Start()
         {
@@ -57,7 +50,7 @@ namespace Actress
             // Note that exception stack traces are lost in this design - in an extended design
             // the event could propagate an ExceptionDispatchInfo instead of an Exception.
 
-            Task.Run(async () =>
+            async Task StartAsync()
             {
                 try
                 {
@@ -68,7 +61,9 @@ namespace Actress
                     _errorEvent.OnNext(exception);
                     throw;
                 }
-            }, this._cancellationToken);
+            }
+
+            Task.Run(StartAsync, this._cancellationToken);
         }
 
         public void Post(TMsg message)
