@@ -4,6 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
+using static Actress.Tests.Option;
+
 namespace Actress.Tests
 {
     /// <summary>
@@ -324,7 +326,7 @@ namespace Actress.Tests
             // Given
             var received = 0L;
 
-            var mb = MailboxProcessor.Start<IOption<int>>(async inbox =>
+            var mb = MailboxProcessor.Start<Option<int>>(async inbox =>
             {
                 for (var i = 0; i < n; i++)
                 {
@@ -337,7 +339,7 @@ namespace Actress.Tests
             // When
             for (var i = 0; i < n; i++)
             {
-                mb.Post(Option.Some(i));
+                mb.Post(Some(i));
             }
 
             // Then
@@ -366,7 +368,7 @@ namespace Actress.Tests
             // Given
             var received = 0L;
 
-            var mb = MailboxProcessor.Start<IOption<int>>(async inbox =>
+            var mb = MailboxProcessor.Start<Option<int>>(async inbox =>
             {
                 while (Interlocked.Read(ref received) < n)
                 {
@@ -389,7 +391,7 @@ namespace Actress.Tests
             for (var i = 0; i < n; i++)
             {
                 Thread.Sleep(1);
-                mb.Post(Option.Some(i));
+                mb.Post(Some(i));
             }
 
             // Then

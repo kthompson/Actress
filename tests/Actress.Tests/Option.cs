@@ -2,57 +2,50 @@
 
 namespace Actress.Tests
 {
-    internal class Option
+    abstract class Option<T>
     {
-        public static IOption<T> Some<T>(T value)
+        public abstract T Value { get; }
+        public abstract bool IsSome { get; }
+        public bool IsNone => !IsSome;
+
+        public static implicit operator Option<T>(Option.NoneType rhs) => Option.OfNone<T>();
+    }
+
+    class Option
+    {
+        public class NoneType
+        {
+        }
+
+        public static Option<T> Some<T>(T value)
         {
             return new SomeInstance<T>(value);
         }
 
-        public static IOption<T> None<T>()
+
+        public static Option<T> OfNone<T>()
         {
             return new NoneInstance<T>();
         }
 
-        class NoneInstance<T> : IOption<T>
+        public static readonly NoneType None = new NoneType();
+
+        class NoneInstance<T> : Option<T>
         {
-            public bool IsNone
-            {
-                get { return true; }
-            }
+            public override bool IsSome => false;
 
-            public bool IsSome
-            {
-                get { return false; }
-            }
-
-            public T Value
-            {
-                get { throw new NotSupportedException(); }
-            }
+            public override T Value => throw new NotSupportedException();
         }
 
-        class SomeInstance<T> : IOption<T>
+        class SomeInstance<T> : Option<T>
         {
-            private T _value;
-            public bool IsNone 
-            {
-                get { return false; }
-            }
+            public override bool IsSome => true;
 
-            public bool IsSome 
-            {
-                get { return true; }
-            }
-
-            public T Value
-            {
-                get { return _value; }
-            }
+            public override T Value { get; }
 
             public SomeInstance(T value)
             {
-                _value = value;
+                Value = value;
             }
         }
     }
