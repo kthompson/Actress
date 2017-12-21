@@ -1,5 +1,7 @@
 # Actress
 
+ [![Nuget](https://img.shields.io/nuget/v/Actress.svg)](https://www.nuget.org/packages/Actress/)
+
 Actress is a C# port of the F# MailboxProcessor.
 
 	nuget install Actress   # Install C# Actor system
@@ -7,6 +9,7 @@ Actress is a C# port of the F# MailboxProcessor.
 
 # Example
 
+```csharp
 
     var printerAgent = MailboxProcessor.Start<string>(async mb =>
     {
@@ -24,3 +27,4 @@ Actress is a C# port of the F# MailboxProcessor.
         printerAgent.Post("hello again");
         printerAgent.Post("hello a third time");
     }
+```
