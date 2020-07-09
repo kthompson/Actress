@@ -126,7 +126,7 @@ namespace Actress
             if (!Equals(res, default(TReply)))
                 return res;
 
-            throw new TimeoutException($"MailboxProcessor PostAndAsyncReply timed out");
+            throw new TimeoutException("MailboxProcessor PostAndAsyncReply timed out");
         }
 
         public Task<TMsg> Receive(int? timeout = null)
