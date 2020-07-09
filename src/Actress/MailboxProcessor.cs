@@ -4,9 +4,9 @@ namespace Actress
     using System.Threading;
     using System.Threading.Tasks;
 
-    public class MailboxProcessor
+    public static class MailboxProcessor
     {
-        public static MailboxProcessor<T> Start<T>(Func<MailboxProcessor<T>, Task> body, CancellationToken? cancellationToken = null) 
+        public static MailboxProcessor<T> Start<T>(Func<MailboxProcessor<T>, Task> body, CancellationToken? cancellationToken = null)
             where T : class
         {
             var mailboxProcessor = new MailboxProcessor<T>(body, cancellationToken);
@@ -83,13 +83,13 @@ namespace Actress
 
             var task = tcs.Task;
 
-            if(task.Wait(timeout ?? this.DefaultTimeout))
+            if (task.Wait(timeout ?? this.DefaultTimeout))
                 return task.Result;
 
             return default(TReply);
         }
 
-        public TReply PostAndReply<TReply>(Func<IReplyChannel<TReply>, TMsg> buildMessage, int? timeout = null) 
+        public TReply PostAndReply<TReply>(Func<IReplyChannel<TReply>, TMsg> buildMessage, int? timeout = null)
         {
             var res = TryPostAndReply(buildMessage, timeout);
             if (!Equals(res, default(TReply)))
@@ -117,17 +117,16 @@ namespace Actress
             if (task.Wait(timeout.Value))
                 return task;
 
-            return null;
+            return Task.FromResult<TReply>(default(TReply));
         }
 
-        public async Task<TReply> PostAndAsyncReply<TReply>(Func<IReplyChannel<TReply>, TMsg> msgf,
-            int? timeout = null)
+        public async Task<TReply> PostAndAsyncReply<TReply>(Func<IReplyChannel<TReply>, TMsg> msgf, int? timeout = null)
         {
             var res = await PostAndTryAsyncReply(msgf, timeout);
-            if (res != null)
+            if (!Equals(res, default(TReply)))
                 return res;
 
-            throw new TimeoutException("MailboxProcessor PostAndReply timed out");
+            throw new TimeoutException("MailboxProcessor PostAndAsyncReply timed out");
         }
 
         public Task<TMsg> Receive(int? timeout = null)
